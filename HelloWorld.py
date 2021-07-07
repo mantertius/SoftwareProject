@@ -49,5 +49,4 @@ while True:
         Player1.Buff()
     elif (keyboard.is_pressed('q')):
         print("Saindo do jogo...")
-        
         quit()
