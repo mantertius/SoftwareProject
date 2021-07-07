@@ -54,7 +54,9 @@ class CompanySystem:
 
     def addEmployee(self, employee):
         self.employedList.append(employee)
-        self.accumulatedWage[employee.getID()] = employee.salary
+        id = employee.getID()
+        #print(id)
+        self.accumulatedWage[id] = employee.salary
     
     def show(self):
         print()
@@ -72,11 +74,19 @@ class CompanySystem:
     def dayWage(self, arrival, leaving, employeeName):
         try:
             employee = self.employedList[self.getEmployeeIndexByName(employeeName)]
+            id = employee.getID()
+            print(f"Encontrado {employee.name}, id: {employee.getID()}!!")
             workedHours = leaving - arrival
+            print(f"Horas trabalhadas: {workedHours}")
+            total = workedHours
             if workedHours > 8:
                 extra = workedHours - 8
                 total = employee.hourWage*8 + employee.hourWage*extra*1.5
-            self.accumulatedWage[employee.getID()] += total
+                print(f'Horas extras: {extra}. Total a ser pago: {total}')
+
+                ##something is wrong with the get.id() and the accumulatedWage.
+            self.accumulatedWage[id] += total
+            print(f'{total} adicionado em sua carteira.')
         except Exception:
             print("dayWage: Employee not found.")
 
@@ -89,7 +99,7 @@ class CompanySystem:
     def addSaleToEmployee(self,employeeName,saleValue):
         try:
             employee = self.employedList[self.getEmployeeIndexByName(employeeName)]
-            self.accumulatedWage[employee.getID()] += saleValue*employee.comission
+            self.accumulatedWage[UUID('employee.getID()')] += saleValue*employee.comission
             print(f'Venda de {saleValue} realizada por {employeeName}.')
         except Exception:
             print(f'addSaleToEmployee: Employee {employeeName} not found')
@@ -121,11 +131,11 @@ a = system.fireEmployee(cece)
 print(f'\nEmpregado demitido.{a.getID()}')
 system.show()
 
+#print(system.accumulatedWage)
 system.dayWage(6,16,'Barbara')
 
 cleiton = Employee('Cleiton','rua4','comissioned',1000, 0.06)
 system.addEmployee(cleiton)
-
 
 system.addSaleToEmployee('Cleiton',50000)
 system.show()
