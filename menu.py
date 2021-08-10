@@ -1,7 +1,7 @@
 import datetime
 from tkinter import *
 from tkinter import ttk
-
+from tkinter import messagebox as mb
 
 asciiTitle ="""           
                                    _   _ 
@@ -22,33 +22,48 @@ class checkbar(Frame):
             self.vars.append(var)
     def state(self):
         return map(lambda var:var.get(),self.vars)
-class addWindow():
-    def __init__(self,root) -> None:
-        self.root = root
-        self.root.title("Add an employee")
-        lbl1 = Label(self.root,text="Name").pack(side=LEFT)
-        entry1 = Entry(self.root,width=15).pack(side=RIGHT)
+
+def Container(master,txt):
+
+    """Creates a Frame that holds a label and an entry.
+
+    Is attatched to master and shows txt on the label."""
+
+    container = Frame(master,pady=0)
+    container.pack()
+    lbl = Label(container, text=txt) 
+    lbl.pack(padx=25,side=LEFT)
+    entry = Entry(container,width=25) #input
+    entry.pack(side=RIGHT)
     
-        
-        lbl2 = Label(self.root, text='Address').pack(side=LEFT)
-        entry2 = Entry(self.root,width=25).pack(side=RIGHT)
-        self.root.mainloop()
-
-# class entryBox(Frame):
-#      def __init__(self, parent=None, picks=[]):
-#         self.container1 = Frame.__init__(self,parent)
-#         self.label1 = Label(self.container1,textvariable=text=)
-
-
+    return entry
 
 def destroyWin(self):
     quit(self)
 
 def submit(win,data):
-    
-    
+    employeeID = 1231
+    str = f"""
+    Successfully added the new employee!
+                            ID:{employeeID}"""
     #send the data to the database?
+    a = mb.showinfo(title='Success!',message=str)
     pass
+
+def windowTitleAndSearch(master,txt) -> None:
+    """Creates a Frame with a Title and a Entry to search Employee. Creates a separator too."""
+    titleContainer = Frame(master)
+    titleContainer.pack()
+    title = Label(titleContainer,text=txt,font=('Arial','11','bold'))
+    title.pack()
+    idTxt = Frame(master)
+    _id = Entry(idTxt)
+    idTxt.pack()
+    _id.pack()
+    searchBtn = Button(idTxt,text='Search',command=lambda arg1=_id.get() : employeeSearcher(_id.get()))
+    searchBtn.pack(side=RIGHT)
+    sep = ttk.Separator(master,orient='horizontal')
+    sep.pack(fill=BOTH,pady=5)
 
 def showComission(container,lbl,entry,type):
 
@@ -61,6 +76,11 @@ def showComission(container,lbl,entry,type):
         container.pack_forget()
         lbl.pack_forget()
         entry.pack_forget()
+
+def employeeSearcher(id) -> bool:
+    #searchs for the employee and returns his attributes as a list
+    #sucessMb = mb.
+    pass
 
 def employeeRemover(id) -> bool:
     #search for (uuid) 
@@ -86,7 +106,7 @@ class Menu(Frame):
         timeNow = datetime.datetime.now()
         self.defaultFont = ("Arial", "10")
         self.titleFont = ("Arial",'10','bold')
-# MENU #########################################################################################
+# MENU      #######################################################################
     # ---- title ----
         self.titleContainer = Frame(master,pady=20)
         self.titleContainer.pack(fill='x')
@@ -147,13 +167,12 @@ class Menu(Frame):
         self.exitButtonContainer = Frame(master,pady=20,borderwidth=2,relief=RAISED)
         self.exitButtonContainer.pack(side=BOTTOM,fill=BOTH,expand=TRUE)
         self.btnExit = Button(self.exitButtonContainer,text='Exit',command=lambda arg1=self:destroyWin(self))
-        self.btnExit.pack(side=BOTTOM)
-
+        self.btnExit.pack(side=BOTTOM)     
 # FEATURES  #######################################################################
 
     def addEmployee(self):
-        menu.withdraw()
         win = Toplevel(menu)
+        #menu.withdraw()
         master = win
         # ----- settings -----
         win.title("Add Employee")
@@ -163,6 +182,7 @@ class Menu(Frame):
         container1.pack()
         title = Label(container1,text='Fill the data of the new employee then press the button.',font=self.titleFont)
         title.pack()
+
 
         # ----- name ------
         container2 = Frame(win,pady=0)
@@ -214,6 +234,7 @@ class Menu(Frame):
         # datatxt = Label(win,text=f'{data}')
         # dataframe.pack()
         # datatxt.pack()
+
         # ----- exit ------
         exitButtonContainer = Frame(master,pady=5,borderwidth=1)
         exitButtonContainer.pack(side=BOTTOM,fill=X)
@@ -227,7 +248,7 @@ class Menu(Frame):
         menu.wm_deiconify()
 
     def rmvEmployee(self):
-        win = Toplevel(menu)
+        win = Toplevel(menu) #creates a new window
         master = win
         win.title("Remove Employee")
         win.geometry('300x150')
@@ -242,6 +263,7 @@ class Menu(Frame):
         _id = Entry(idTxt)
         idTxt.pack(pady=5)
         _id.pack()
+
 
         exitButtonContainer = Frame(master,pady=5,borderwidth=1)
         exitButtonContainer.pack(side=BOTTOM,fill=X)
@@ -259,57 +281,177 @@ class Menu(Frame):
         win = Toplevel(menu)
         master = win
         win.title("Change Employee")
-        win.resizable(False,False)
+        win.resizable(TRUE,False)
         
         #title + idsearch
         titleContainer = Frame(win)
         titleContainer.pack()
-        title = Label(titleContainer,text='Insert employee ID',font=('Arial','11','bold'))
+        title = Label(titleContainer,text=' Insert employee ID',font=('Arial','11','bold'))
         title.pack()
-        idTxt = Frame(win)
-        _id = Entry(idTxt)
-        idTxt.pack()
+        idContainer = Frame(win)
+        _id = Entry(idContainer)
+        idContainer.pack(side=TOP)
         _id.pack()
+        searchBtn = Button(idContainer,text='Search',command=lambda arg1=_id.get() : employeeSearcher(_id.get()))
+        searchBtn.pack(side=RIGHT)
         
         # ----- checkbar -----
-        #                         0      1              2              3       4             5
-        chk = checkbar(master,['Name','Address','Method of Payment','Union','Union ID','Union Fee'])
-        chk.pack()
-        chk.state()
+            # numbers                   0      1        2           3              4             5              6
+            #chk = checkbar(master,['Name','Address','Type,'Method of Payment','Union Status','Union ID','Union Fee'])
+            #chk.pack()
+            #chk.state()
+        sep = ttk.Separator(master,orient='horizontal')
+        sep.pack(fill=BOTH,pady=5)
+        lbl1 = Label(master,text='Type what you want to change and leave the rest blank',font=('Arial','10','bold'))
+        lbl1.pack(pady=5)
+        c1 = Container(master,'Name')
+        c2 = Container(master,'Address')
+        c3 = Container(master,'Type')
+        c4 = Container(master,'Payment')
+        c5 = Container(master,'Union Status')
+        c6 = Container(master,'Union ID')
+        c7 = Container(master,'Union Fee')
 
-
-
-
+        
+    
         # ----- exit button ------
         exitButtonContainer = Frame(master,pady=5,borderwidth=1)
         exitButtonContainer.pack(side=BOTTOM,fill=X)
         btnExit = Button(exitButtonContainer,text='Back',command=win.destroy)
         btnExit.pack(side=LEFT)
-        menu.wm_deiconify()
 
         #TODO #3 show what has been changed
         # ----- submit -----
+        
         btnSubmit = Button(exitButtonContainer, text='Change',command=lambda arg1=_id.get(): employeeChanger(_id.get()))
         btnSubmit.pack(side=RIGHT)
-        pass
 
     def sendPoint(self):
+        master = Toplevel(menu)
+        master.title('Send Electronic Point Data')
+        master.resizable(False,False)
+
+        title = windowTitleAndSearch(master,'Insert ID of the employee')
+
+        arrival = Container(master,"Arrival")
+        leaving = Container(master,"Leaving")
+
+        exitButtonContainer = Frame(master,pady=5,borderwidth=1)
+        exitButtonContainer.pack(side=BOTTOM,fill=X)
+        btnExit = Button(exitButtonContainer,text='Back',command=master.destroy)
+        btnExit.pack(side=LEFT)
+
+        # ----- submit -----
+        #TODO #4 create a button that commands a function to send the point data
+        #btnSubmit = Button(exitButtonContainer, text='Change',command=lambda arg1=_id.get(): employeeChanger(_id.get()))
+        #btnSubmit.pack(side=RIGHT)
         pass
     
     def sendSale(self):
-        pass
+        master = Toplevel(menu)
+        master.title('Send Sale Data')
+        master.resizable(False,False)
+
+        title = windowTitleAndSearch(master,'Insert ID of the employee')
+
+        sale = Container(master,"Sale Price")
+
+        exitButtonContainer = Frame(master,pady=5,borderwidth=1)
+        exitButtonContainer.pack(side=BOTTOM,fill=X)
+        btnExit = Button(exitButtonContainer,text='Back',command=master.destroy)
+        btnExit.pack(side=LEFT)
+
+        # ----- submit -----
+        #TODO config submit button
+        #btnSubmit = Button(exitButtonContainer, text='Change',command=lambda arg1=_id.get(): employeeChanger(_id.get()))
+        #btnSubmit.pack(side=RIGHT)
     
     def sendTax(self):
-        pass
+        master = Toplevel(menu)
+        master.title('Send Union Service Fee')
+        master.resizable(False,False)
+
+        title = windowTitleAndSearch(master,'Insert ID of the employee')
+
+        sale = Container(master,"Fee")
+
+        exitButtonContainer = Frame(master,pady=5,borderwidth=1)
+        exitButtonContainer.pack(side=BOTTOM,fill=X)
+        btnExit = Button(exitButtonContainer,text='Back',command=master.destroy)
+        btnExit.pack(side=LEFT)
+
+        # ----- submit -----
+        #TODO config submit button
+        #btnSubmit = Button(exitButtonContainer, text='Change',command=lambda arg1=_id.get(): employeeChanger(_id.get()))
+        #btnSubmit.pack(side=RIGHT)
     
     def changePayday(self):
-        pass
+        master = Toplevel(menu)
+        master.title('Change Payday')
+        master.resizable(False,False)
+        master.geometry('300x250+30+30')
+
+        title = windowTitleAndSearch(master,'Insert ID of the employee')
+
+        container4 = Frame(master)
+        container4.pack()
+        #TODO #5 add new options dinamically using some sort of database
+        options = ['Weekly','Monthly','Bi-Weekly']
+        payday = StringVar()
+        payday.set(options[0])
+        paydayChooser = ttk.Combobox(container4,state='readonly',values=options,textvariable=payday)
+        paydayChooser.pack(side=RIGHT)
+
+        exitButtonContainer = Frame(master,pady=5,borderwidth=1)
+        exitButtonContainer.pack(side=BOTTOM,fill=X)
+        btnExit = Button(exitButtonContainer,text='Back',command=master.destroy)
+        btnExit.pack(side=LEFT)
+
+        # ----- submit -----
+        #todo config submit button
+        #btnSubmit = Button(exitButtonContainer, text='Change',command=lambda arg1=_id.get(): employeeChanger(_id.get()))
+        #btnSubmit.pack(side=RIGHT)pass
 
     def createPayday(self):
-        pass
+        master = Toplevel(menu)
+        master.title('Create Payday')
+        master.resizable(False,False)
+
+        title = windowTitleAndSearch(master,'Insert ID of the employee')
+
+        sale = Container(master,"New Payday")
+
+        exitButtonContainer = Frame(master,pady=5,borderwidth=1)
+        exitButtonContainer.pack(side=BOTTOM,fill=X)
+        btnExit = Button(exitButtonContainer,text='Back',command=master.destroy)
+        btnExit.pack(side=LEFT)
+
+        # ----- submit -----
+        #todo config submit button
+        #btnSubmit = Button(exitButtonContainer, text='Change',command=lambda arg1=_id.get(): employeeChanger(_id.get()))
+        #btnSubmit.pack(side=RIGHT)
 
     def runPayroll(self):
-        pass
+        master = Toplevel(menu)
+        master.title('Make Payments')
+        master.resizable(False,False)
+
+        container1 = Frame(master)
+        lbl1 = Label(master,text='Here are the employees that are to recieve today:')
+        container1.pack()
+        lbl1.pack()
+
+        
+
+        exitButtonContainer = Frame(master,pady=5,borderwidth=1)
+        exitButtonContainer.pack(side=BOTTOM,fill=X)
+        btnExit = Button(exitButtonContainer,text='Back',command=master.destroy)
+        btnExit.pack(side=LEFT)
+
+        # ----- submit -----
+        #todo config submit button
+        #btnSubmit = Button(exitButtonContainer, text='Change',command=lambda arg1=_id.get(): employeeChanger(_id.get()))
+        #btnSubmit.pack(side=RIGHT)
 
 menu = Tk()
 app = Menu(menu)
