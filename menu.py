@@ -34,6 +34,13 @@ class addWindow():
         entry2 = Entry(self.root,width=25).pack(side=RIGHT)
         self.root.mainloop()
 
+# class entryBox(Frame):
+#      def __init__(self, parent=None, picks=[]):
+#         self.container1 = Frame.__init__(self,parent)
+#         self.label1 = Label(self.container1,textvariable=text=)
+
+
+
 def destroyWin(self):
     quit(self)
 
@@ -65,6 +72,12 @@ def employeeChanger(id,dictionary) -> bool:
     #dictonary shows what needs to be changed {'name':"new_name"}
     #sends to change stuff
     pass
+
+def showChangeable(win, list):
+    
+    for a in list:
+        if(a):
+            print(a)
 class Menu(Frame):
     """ It's the class that shows the MENU."""
     def __init__(self,master=None):
@@ -137,7 +150,7 @@ class Menu(Frame):
         self.btnExit.pack(side=BOTTOM)
 
 # FEATURES  #######################################################################
-    
+
     def addEmployee(self):
         menu.withdraw()
         win = Toplevel(menu)
@@ -238,7 +251,7 @@ class Menu(Frame):
 
         #TODO #2 show who has been removed
         # ----- submit -----
-        btnSubmit = Button(exitButtonContainer, text='Remove',command=lambda arg1=_id.get(): employeeRemover(id))
+        btnSubmit = Button(exitButtonContainer, text='Remove',command=lambda arg1=_id.get(): employeeRemover(_id.get()))
         btnSubmit.pack(side=RIGHT)
         pass
     
@@ -257,12 +270,17 @@ class Menu(Frame):
         _id = Entry(idTxt)
         idTxt.pack()
         _id.pack()
+        
+        # ----- checkbar -----
+        #                         0      1              2              3       4             5
+        chk = checkbar(master,['Name','Address','Method of Payment','Union','Union ID','Union Fee'])
+        chk.pack()
+        chk.state()
 
 
 
 
-
-
+        # ----- exit button ------
         exitButtonContainer = Frame(master,pady=5,borderwidth=1)
         exitButtonContainer.pack(side=BOTTOM,fill=X)
         btnExit = Button(exitButtonContainer,text='Back',command=win.destroy)
@@ -271,7 +289,7 @@ class Menu(Frame):
 
         #TODO #3 show what has been changed
         # ----- submit -----
-        btnSubmit = Button(exitButtonContainer, text='Remove',command=lambda arg1=_id.get(): employeeChanger(id))
+        btnSubmit = Button(exitButtonContainer, text='Change',command=lambda arg1=_id.get(): employeeChanger(_id.get()))
         btnSubmit.pack(side=RIGHT)
         pass
 
