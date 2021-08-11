@@ -11,8 +11,7 @@ class GUI(Frame):
         self.my_frame = Frame(self.master)
         self.my_frame.pack()
 
-        self.button1 = Button(self.master, text="Open New Window",
-                                         wcommand = open_toplevel_window)
+        self.button1 = Button(self.master, text="Open New Window", command = open_toplevel_window)
         self.button1.pack()
 
         self.text = Text(self.master, width = 20, height = 3)

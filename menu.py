@@ -2,7 +2,8 @@ import datetime
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox as mb
-
+from employee2 import *
+from companySystem import *
 asciiTitle ="""           
                                    _   _ 
   _ __   __ _   _  _   _ _   ___  | | | |
@@ -42,13 +43,20 @@ def destroyWin(self):
     quit(self)
 
 def submit(win,data):
-    employeeID = 1231
-    str = f"""
-    Successfully added the new employee!
-                            ID:{employeeID}"""
-    #send the data to the database?
-    a = mb.showinfo(title='Success!',message=str)
-    pass
+    if data.get('name')!='' and data.get('salary')!='' and data.get('address')!="" and data.get('type') !="":
+        newemployee = Employee(name=data.get('name'),salary=data.get('salary'),address=data.get('address'),type=data.get('type'),commission=data.get('commission'))
+        CompanySystem.addEmployee(newemployee)
+        
+        employeeID = newemployee.getID()
+        print(employeeID.hex)
+        str = f"""
+        Successfully added the new employee!
+                            ID:{employeeID.hex}"""
+        #send the data to the database?
+        a = mb.showinfo(title='Success!',message=str)
+        pass
+    else:
+        mb.showerror(title='Failure.',message='Could not create an employee. Try again, but remember to fill everything.')
 
 def windowTitleAndSearch(master,txt) -> None:
     """Creates a Frame with a Title and a Entry to search Employee. Creates a separator too."""
@@ -77,20 +85,42 @@ def showComission(container,lbl,entry,type):
         lbl.pack_forget()
         entry.pack_forget()
 
-def employeeSearcher(id) -> bool:
-    #searchs for the employee and returns his attributes as a list
-    #sucessMb = mb.
+def employeeSearcher(master,id) -> bool:
+    if id != '':
+        realID = uuid.UUID(id)
+        a = CompanySystem.searchEmployeeByID(realID)
+        name = a.getName()
+        address = a.getAddress()
+        payment = a.getPayment()
+        status = a.getUnionStatus()
+        uID = a.getUnionID()
+        commission = a.getCommission()
+        uFee = a.getUnionFee()
+        type = a.getType()
+
+        container=Frame(master)
+        txt1 = Label(container,text=f'Name:{name}| Address:{address} | Type: {type} | Payment: {payment} | Union Status: {status} | Union ID: {uID} | Union Fee: {uFee} | Commision: {commission}')
+        container.pack(side=TOP)
+        txt1.pack()
+        master.update()
+    else:
+        mb.showerror(title='Failure.',message='Something went wrong. Maybe you forgot to fill the field?')
     pass
 
 def employeeRemover(id) -> bool:
-    #search for (uuid) 
-    # if uuid = found -> kill -> return true
-    # else -> return false
-    pass
+    if id != "":
+        a = CompanySystem.removeEmployeeByID(uuid.UUID(id))
+        if a != False:
+            b=mb.showinfo(title='Success!',message=f'Employee with ID: {id} removed.')
+        else:
+            c=mb.showerror(title="Failure.",message="Employee could not be removed.")
+        pass
+    else:
+        mb.showerror(title='Fill the ID!',message="Don't forget to fill the ID field.")
 
 def employeeChanger(id,dictionary) -> bool:
-    #dictonary shows what needs to be changed {'name':"new_name"}
-    #sends to change stuff
+    uuidID = uuid.UUID(id)
+
     pass
 
 def showChangeable(win, list):
@@ -220,11 +250,11 @@ class Menu(Frame):
         
         # ------ comission or not ------
         container5 = Frame(win,pady=0)
-        lbl4=Label(container5,text='Comission')
+        lbl4=Label(container5,text='Commission')
         entry4=Entry(container5,width=25)
         type.trace_add('write',lambda arg1=container5,arg2=lbl4,arg3=entry4,arg4=type:showComission(container5,lbl4,entry4,type))
 
-        data = {'salary': salaryentry.get(),'name':entry1.get(), 'address':entry2.get(), 'comission':entry4.get(),'type': type.get()}
+        data = {'salary': salaryentry.get(),'name':entry1.get(), 'address':entry2.get(), 'commission':entry4.get(),'type': type.get()}
         
         # ----- log ------
         #TODO #1 create a way to make the user see the new employee ID.
@@ -261,8 +291,8 @@ class Menu(Frame):
         title.pack()
         idTxt = Frame(win)
         _id = Entry(idTxt)
-        idTxt.pack(pady=5)
-        _id.pack()
+        idTxt.pack(pady=5,fill=X)
+        _id.pack(fill=X,expand=TRUE,padx=5)
 
 
         exitButtonContainer = Frame(master,pady=5,borderwidth=1)
@@ -291,8 +321,8 @@ class Menu(Frame):
         idContainer = Frame(win)
         _id = Entry(idContainer)
         idContainer.pack(side=TOP)
-        _id.pack()
-        searchBtn = Button(idContainer,text='Search',command=lambda arg1=_id.get() : employeeSearcher(_id.get()))
+        _id.pack(padx=5,fill=X,expand=TRUE)
+        searchBtn = Button(idContainer,text='Search',command=lambda arg1 = master,arg2=_id.get() : employeeSearcher(master,_id.get()))
         searchBtn.pack(side=RIGHT)
         
         # ----- checkbar -----
@@ -303,10 +333,12 @@ class Menu(Frame):
         sep = ttk.Separator(master,orient='horizontal')
         sep.pack(fill=BOTH,pady=5)
         lbl1 = Label(master,text='Type what you want to change and leave the rest blank',font=('Arial','10','bold'))
-        lbl1.pack(pady=5)
+        lbl1.pack(pady=5,padx=5)
         c1 = Container(master,'Name')
         c2 = Container(master,'Address')
         c3 = Container(master,'Type')
+        c8 = Container(master,'Salary' )
+        c9 = Container(master,'Commission')
         c4 = Container(master,'Payment')
         c5 = Container(master,'Union Status')
         c6 = Container(master,'Union ID')
@@ -456,7 +488,7 @@ class Menu(Frame):
 menu = Tk()
 app = Menu(menu)
 menu.title("Payroll System")
-menu.geometry('340x620+40+40')
+menu.geometry('340x620+600+40')
 #print(a)
 menu.resizable(False,True)
 menu.mainloop()
