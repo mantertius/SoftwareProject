@@ -24,10 +24,10 @@ Cada empregado pode escolher um método de pagamento diferente:
 -   self.name = name
 -   self.address = address
 -   self.type = type 
--   self.companyID = uuid.uuid4()
--   self.sindicateID = uuid.uuid4()
+-   companyID = uuid.uuid4()
+-   self.unionID = uuid.uuid4()
 -   self.hourWage = hourWage
 -	self.salary = salary
--	self.sindicateStatus = False
--	self.sindicateTax = 0
+-	self.unionStatus = False
+-	self.unionTax = 0
 -	self.commission = commission
