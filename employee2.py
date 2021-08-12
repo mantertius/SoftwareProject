@@ -34,6 +34,7 @@ class Employee:
 		return self.unionID
 	def getCommission(self):
 		return self.commission
+
 #setters
 	def setName(self, newName):
 		self.name = newName

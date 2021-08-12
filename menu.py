@@ -26,7 +26,7 @@ class checkbar(Frame):
 
 def Container(master,txt):
 
-    """Creates a Frame that holds a label and an entry.
+    """Creates a Frame that holds a label and an entry. Returns the entry input
 
     Is attatched to master and shows txt on the label."""
 
@@ -99,27 +99,33 @@ def showComission(container,lbl,entry,type):
         lbl.pack_forget()
         entry.pack_forget()
 
-def employeeSearcher(master,id) -> bool:
+def employeeSearcher(master,id) -> Employee:
+    """Search for an employee by it's ID and return the found employee(if found)"""
     if id != '':
         realID = uuid.UUID(id)
-        a = CompanySystem.searchEmployeeByID(realID)
-        name = a.getName()
-        address = a.getAddress()
-        payment = a.getPayment()
-        status = a.getUnionStatus()
-        uID = a.getUnionID()
-        commission = a.getCommission()
-        uFee = a.getUnionFee()
-        type = a.getType()
-        #TODO #6 FIX this container and fix the change button
-        container=Frame(master)
-        txt1 = Label(container,text=f'Name:{name}| Address:{address} | Type: {type} | Payment: {payment} | Union Status: {status} | Union ID: {uID} | Union Fee: {uFee} | Commision: {commission}')
-        container.pack(side=TOP)
-        txt1.pack()
-        master.update()
+        a = CompanySystem.searchEmployeeByID(realID) #object Employee
+        if a != False:
+            name = a.getName()
+            address = a.getAddress()
+            payment = a.getPayment()
+            status = a.getUnionStatus()
+            uID = a.getUnionID()
+            commission = a.getCommission()
+            uFee = a.getUnionFee()
+            type = a.getType()
+            #TODO #6 FIX this container and fix the change button
+            container=Frame(master)
+            txt1 = Label(container,text=f'Name: {name} | Address: {address} | Type: {type} | Payment: {payment} | Union Status: {status} | Union ID: {uID} | Union Fee: {uFee} | Commision: {commission}')
+            container.pack(side=TOP,padx=5,pady=5)
+            txt1.pack()
+            master.update()
+            return a
+        else:
+            mb.showerror(title="Employee not found",message='Employee not found.')
     else:
-        mb.showerror(title='Failure.',message='Something went wrong. Maybe you forgot to fill the field?')
-    pass
+        mb.showerror(title='Failure',message='Something went wrong. Maybe you forgot to fill the field?')
+        return False
+    
 
 def employeeRemover(id) -> bool:
     if id != "":
@@ -132,8 +138,11 @@ def employeeRemover(id) -> bool:
     else:
         mb.showerror(title='Fill the ID!',message="Don't forget to fill the ID field.")
 
-def employeeChanger(id,dictionary) -> bool:
-    uuidID = uuid.UUID(id)
+def employeeChanger(master,name,type,salary,commission,payment,unionStatus,unionID,unionFee,address, employeeID) -> bool:
+    #arg1=master, arg2= _name, arg3= _type, arg4=_salary, arg5=_commission, arg6=_payment, arg7=_unionStatus, arg8=_unionID, arg9=_unionFee, arg10 =_address
+    realID = uuid.UUID(employeeID)
+    a = CompanySystem.searchEmployeeByID(realID)
+
 
     pass
 
@@ -295,7 +304,6 @@ class Menu(Frame):
         # print([entry4.get()])
         # print([entry1.get()])
 
-
     def rmvEmployee(self):
         win = Toplevel(menu) #creates a new window
         master = win
@@ -354,16 +362,16 @@ class Menu(Frame):
         sep.pack(fill=BOTH,pady=5)
         lbl1 = Label(master,text='Type what you want to change and leave the rest blank',font=('Arial','10','bold'))
         lbl1.pack(pady=5,padx=5)
-        c1 = Container(master,'Name')
-        c2 = Container(master,'Address')
-        c3 = Container(master,'Type')
-        c8 = Container(master,'Salary' )
-        c9 = Container(master,'Commission')
-        c4 = Container(master,'Payment')
-        c5 = Container(master,'Union Status')
-        c6 = Container(master,'Union ID')
-        c7 = Container(master,'Union Fee')
-
+        _name = Container(master,'Name')
+        _address = Container(master,'Address')
+        _type = Container(master,'Type')
+        _salary = Container(master,'Salary' )
+        _commission = Container(master,'Commission')
+        _payment = Container(master,'Payment')
+        _unionStatus = Container(master,'Union Status')
+        _unionID = Container(master,'Union ID')
+        _unionFee = Container(master,'Union Fee')
+        #arg1=master, arg2= _name, arg3= _type, arg4=_salary, arg5=_commission, arg6=_payment, arg7=_unionStatus, arg8=_unionID, arg9=_unionFee, arg10= _address
         
     
         # ----- exit button ------
@@ -375,7 +383,7 @@ class Menu(Frame):
         #TODO #3 show what has been changed
         # ----- submit -----
         
-        btnSubmit = Button(exitButtonContainer, text='Change',command=lambda arg1=_id.get(): employeeChanger(_id.get()))
+        btnSubmit = Button(exitButtonContainer, text='Change',command=lambda arg1=master, arg2= _name.get(), arg3= _type.get(), arg4=_salary.get(), arg5=_commission.get(), arg6=_payment.get(), arg7=_unionStatus.get(), arg8=_unionID.get(), arg9=_unionFee.get(), arg10=_address.get(),arg11=_id.get(): employeeChanger(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11))
         btnSubmit.pack(side=RIGHT)
 
     def sendPoint(self):
