@@ -42,19 +42,33 @@ def Container(master,txt):
 def destroyWin(self):
     quit(self)
 
-def submit(win,data):
-    if data.get('name')!='' and data.get('salary')!='' and data.get('address')!="" and data.get('type') !="":
-        newemployee = Employee(name=data.get('name'),salary=data.get('salary'),address=data.get('address'),type=data.get('type'),commission=data.get('commission'))
-        CompanySystem.addEmployee(newemployee)
+def submit(win,name,address,type,salary,commission):
+    print([name+salary+address])
+    if name != '' and address !='' and salary!="":
+        if type == 'commissioned':
+            newemployee = Employee(name=name, salary=salary, address=address, type=type, commission=commission)
+            CompanySystem.addEmployee(newemployee)
+            
+            employeeID = newemployee.getID()
+            print(employeeID.hex)
+            str = f"""
+            Successfully added the new employee!
+                                ID:{employeeID.hex}"""
+            #send the data to the database?
+            a = mb.showinfo(title='Success!',message=str)
         
-        employeeID = newemployee.getID()
-        print(employeeID.hex)
-        str = f"""
-        Successfully added the new employee!
-                            ID:{employeeID.hex}"""
-        #send the data to the database?
-        a = mb.showinfo(title='Success!',message=str)
-        pass
+        else:
+            newemployee = Employee(name=name,salary=salary,address=address,type=type,commission=commission)
+            CompanySystem.addEmployee(newemployee)
+            
+            employeeID = newemployee.getID()
+            print(employeeID.hex)
+            str = f"""
+            Successfully added the new employee!
+                                ID:{employeeID.hex}"""
+            #send the data to the database?
+            a = mb.showinfo(title='Success!',message=str)
+
     else:
         mb.showerror(title='Failure.',message='Could not create an employee. Try again, but remember to fill everything.')
 
@@ -97,7 +111,7 @@ def employeeSearcher(master,id) -> bool:
         commission = a.getCommission()
         uFee = a.getUnionFee()
         type = a.getType()
-
+        #TODO #6 FIX this container and fix the change button
         container=Frame(master)
         txt1 = Label(container,text=f'Name:{name}| Address:{address} | Type: {type} | Payment: {payment} | Union Status: {status} | Union ID: {uID} | Union Fee: {uFee} | Commision: {commission}')
         container.pack(side=TOP)
@@ -221,6 +235,7 @@ class Menu(Frame):
         lbl1.pack(padx=25,side=LEFT)
         entry1 = Entry(container2,width=25)
         entry1.pack(side=RIGHT)
+        entry1.get()
 
         # ----- address -----   
         container3 = Frame(win,pady=0)
@@ -252,30 +267,34 @@ class Menu(Frame):
         container5 = Frame(win,pady=0)
         lbl4=Label(container5,text='Commission')
         entry4=Entry(container5,width=25)
+        entry4.insert(END,'')
         type.trace_add('write',lambda arg1=container5,arg2=lbl4,arg3=entry4,arg4=type:showComission(container5,lbl4,entry4,type))
-
-        data = {'salary': salaryentry.get(),'name':entry1.get(), 'address':entry2.get(), 'commission':entry4.get(),'type': type.get()}
         
-        # ----- log ------
-        #TODO #1 create a way to make the user see the new employee ID.
-        # separator = ttk.Separator(win,orient=HORIZONTAL)
-        # separator.pack()
-        # dataframe = Frame(win,pady=0)
-        # datatxt = Label(win,text=f'{data}')
-        # dataframe.pack()
-        # datatxt.pack()
-
         # ----- exit ------
         exitButtonContainer = Frame(master,pady=5,borderwidth=1)
         exitButtonContainer.pack(side=BOTTOM,fill=X)
         btnExit = Button(exitButtonContainer,text='Back',command=win.destroy)
         btnExit.pack(side=LEFT)
-        menu.wm_deiconify()
-
+        
         # ----- submit -----
-        btnSubmit = Button(exitButtonContainer, text='Submit',command=lambda arg1=win,arg2=data: submit(win,data))
+        
+        # data= {}
+                                                                                                                                                                                        # data['salaryentry'] = salaryentry.get()
+                                                                                                                                                                                        # data['address'] = entry2.get()
+                                                                                                                                                                                        # data['type'] = type.get()
+                                                                                                                                                                                        # data['name'] = entry1.get()
+                                                                                                                                                                                        # data['commission'] = entry4.get()
+                                                                                                                                                                                        # master.after(1000,master.update)
+        
+        # data = {'salary': salaryentry.get(),'name':entry1.get(), 'address':entry2.get(), 'type': type.get()}
+        #btnSubmit = Button(exitButtonContainer, text='Submit',command=lambda arg1=win,arg2=data: submit(win,data))
+        btnSubmit = Button(exitButtonContainer, text='Submit', command=lambda arg1=salaryentry.get(), arg2=entry2.get(),arg3=type.get(), arg4=entry1.get(),arg5=master : submit(name=entry1.get(),address=entry2.get(),type=type.get(),commission=entry4.get(),win=master,salary=salaryentry.get()))
         btnSubmit.pack(side=RIGHT)
-        menu.wm_deiconify()
+
+        #'commission':entry4.get()
+        # print([entry4.get()])
+        # print([entry1.get()])
+
 
     def rmvEmployee(self):
         win = Toplevel(menu) #creates a new window
@@ -293,7 +312,7 @@ class Menu(Frame):
         _id = Entry(idTxt)
         idTxt.pack(pady=5,fill=X)
         _id.pack(fill=X,expand=TRUE,padx=5)
-
+        print([_id.get()])
 
         exitButtonContainer = Frame(master,pady=5,borderwidth=1)
         exitButtonContainer.pack(side=BOTTOM,fill=X)
@@ -303,7 +322,8 @@ class Menu(Frame):
 
         #TODO #2 show who has been removed
         # ----- submit -----
-        btnSubmit = Button(exitButtonContainer, text='Remove',command=lambda arg1=_id.get(): employeeRemover(_id.get()))
+        #btnSubmit = Button(exitButtonContainer, text='Remove',command=lambda arg1=_id.get(): employeeRemover(_id.get()))
+        btnSubmit = Button(exitButtonContainer, text='Remove',command=lambda arg1=_id.get(): print(_id.get()))
         btnSubmit.pack(side=RIGHT)
         pass
     
