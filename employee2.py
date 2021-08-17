@@ -1,11 +1,11 @@
 import uuid
 
 class Employee:
-	def __init__(self,name,address,type, salary,commission=0,hourWage=0): #by default is a salaried
+	def __init__(self,name,address,type, salary,commission=0,hourWage=0,payday="Monthly"): 	#by default is a salaried an not filiated to the union
 		self.name = name
 		self.address = address
-		self.type = type  #salaried,commissioned,hourist
-		self.paymentMethod = 'Depósito em conta bancária'   #correios,cheque em mãos, depósito em conta bancária
+		self.type = type  													#salaried,commissioned,hourist
+		self.paymentMethod = 'Depósito em conta bancária'   				#correios,cheque em mãos, depósito em conta bancária
 		self.companyID = uuid.uuid4()
 		self.unionID = None
 		self.hourWage = hourWage
@@ -13,6 +13,7 @@ class Employee:
 		self.unionStatus = False
 		self.unionFee = 0
 		self.commission = commission
+		self.payday = payday
 		print(f'Employee created. UUID: {self.companyID.hex}')
 
 #getters 
@@ -57,13 +58,18 @@ class Employee:
 	def setUnionFee(self, newTax):
 		self.sidicateTax = newTax
 		print('Union tax changed successfully')
-	def setComission(self, newCom):
+	def setCommission(self, newCom):
 		self.commission = newCom
 		print('Commission changed successfully.')
 
+	def setType(self,newType):
+		self.type = newType
+
+	def setPayment(self,newPayment):
+		self.paymentMethod=newPayment
 #type changers
-	def setType(self, newType, newSalary, newHourWage, newCommission):
-			self.salary = newSalary
-			self.commission = newCommission
-			self.hourWage = newHourWage
-			self.type = newType
+	# def setType(self, newType, newSalary, newHourWage, newCommission):
+	# 		self.salary = newSalary
+	# 		self.commission = newCommission
+	# 		self.hourWage = newHourWage
+	# 		self.type = newType

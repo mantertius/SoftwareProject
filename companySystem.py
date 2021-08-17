@@ -3,6 +3,8 @@ class CompanySystem:
 	def __init__(self):
 		self.employedList = {}
 		self.accumulatedWage= {}
+		self._paydays = {'Weekly','Bi-Weekly','Monthly'}
+		#self.employeePayday = {'dia' : [<empregado1>,emprega2]}
 
 	def searchEmployeeByName(self, employeeName):
 		if employeeName in self.employedList.name:
@@ -16,8 +18,8 @@ class CompanySystem:
 			return self.employedList[_employeeID]
 		else:
 			return False
-
 	#recieves the object employee
+	
 	def addEmployee(self, newEmployeeObject):
 		"""Adds an employee based on the EmployeeObject."""
 		self.employedList[newEmployeeObject.companyID] = newEmployeeObject  #appends the whole object
@@ -35,20 +37,76 @@ class CompanySystem:
 		"""Removes an employee after searching for his ID."""
 		if self.searchEmployeeByID(employeeID):
 			print('Employee removed.')
-			self.employedList.pop(employeeID)
+			return self.employedList.pop(employeeID)
+		else:
+			return False
+
+	def electronicData(self, arrival, leaving, employee) -> bool:
+		"""Recieves arrival, leaving and the object Employee. Returns boolean."""
+		if employee.type == 'hourist':
+			workedHours = int(leaving) - int(arrival)
+			print(f"Horas trabalhadas: {workedHours}")
+			total = workedHours
+			if workedHours > 8:
+				extra = workedHours - 8
+				total = int(employee.salary)*8 + int(employee.salary)*extra*1.5					
+				print(f'Horas extras: {extra}. Total a ser pago: {total}')
+				self.accumulatedWage[employee.companyID] += total
+				print(f'{total} adicionado em sua carteira.')
+				return True
+		else:
+			return False
+
+	def saleData(self,employee,saleValue):
+		"""Recieves employee Object and the Sale value. Returns boolean."""
+		if employee.type == 'commissioned':
+			commission = int(employee.commission)*int(saleValue)/100
+			self.accumulatedWage[employee.companyID] += commission
+			print(f'{commission} adicionado em sua carteira.')
+			return True
+		else:
+			return False
+	
+	def feeData(self,employee,feeValue):
+		"""Recieves employee Object and the Fee value. Returns boolean."""
+		if employee.unionStatus:
+			self.accumulatedWage[employee.companyID] -= feeValue
+			print(f'{feeValue} retirado de sua carteira.')
+			return True
+		else:
+			return False
+
+	def addPayday(self, newPayday):
+		self._paydays[newPayday] = None
+
+		pass
+
 
 CompanySystem = CompanySystem()
-test = Employee('blue','blim','h',32,13,55)
-test2 = Employee('zaga','blim','h',32,13,55)
+#test = Employee('blue','blim','h',32,13,55)
+print()
+print('--------------------------------------------------------')
+hourist = Employee('Nome1','Endereço1','hourist','10')
+salaried = Employee('Nome2','Endereço2','salaried','1132')
+commissioned = Employee('Nome3','Endereço3','commissioned','1132',commission=5)
 
-id1 = test.getID()
-id2 = test2.getID()
-print(type(id1))
-CompanySystem.addEmployee(test)
-CompanySystem.addEmployee(test2)
+#id1 = test.getID()
+idh = hourist.getID()
+ids = salaried.getID()
+idc = commissioned.getID()
+
+print(f'\nHourist: {idh.hex}')
+print(f'Salaried: {ids.hex}')
+print(f'Commissioned: {idc.hex}\n')
+#CompanySystem.addEmployee(test)
+CompanySystem.addEmployee(hourist)
+CompanySystem.addEmployee(salaried)
+CompanySystem.addEmployee(commissioned)
+print('-------------------------------------------------------------')
+print()
 
 
-print(CompanySystem.searchEmployeeByID(id1.hex))
-print(CompanySystem.searchEmployeeByID(id2))
+#print(CompanySystem.searchEmployeeByID(id1.hex))
+#(CompanySystem.searchEmployeeByID(id2))
 
-CompanySystem.removeEmployeeByID(id1)
+#CompanySystem.removeEmployeeByID(id1)

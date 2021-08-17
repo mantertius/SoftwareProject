@@ -24,6 +24,19 @@ class checkbar(Frame):
     def state(self):
         return map(lambda var:var.get(),self.vars)
 
+def ContainerCombobox(master, labelText, optionList) -> StringVar:
+    """Creates a Combobox and a Label. Adds it to master. Returns the selected."""
+    containerCombobox = Frame(master)
+    containerCombobox.pack()
+    options = optionList
+    _paymentLabel = Label(containerCombobox,text=labelText)
+    _paymentLabel.pack(side=LEFT,padx=30)
+    _payment = StringVar(master)
+    _payment.set(options[0])
+    _paymentChooser = ttk.Combobox(containerCombobox,state='readonly',values=options,textvariable=_payment)
+    _paymentChooser.pack(side=RIGHT)
+    return _payment
+
 def Container(master,txt):
 
     """Creates a Frame that holds a label and an entry. Returns the entry input
@@ -43,10 +56,10 @@ def destroyWin(self):
     quit(self)
 
 def submit(win,name,address,type,salary,commission):
-    print([name+salary+address])
+    #print([name+salary+address])
     if name != '' and address !='' and salary!="":
         if type == 'commissioned':
-            newemployee = Employee(name=name, salary=salary, address=address, type=type, commission=commission)
+            newemployee = Employee(name=name, salary=salary, address=address, type=type, commission=commission,payday='Bi-Weekly')
             CompanySystem.addEmployee(newemployee)
             
             employeeID = newemployee.getID()
@@ -57,8 +70,19 @@ def submit(win,name,address,type,salary,commission):
             #send the data to the database?
             a = mb.showinfo(title='Success!',message=str)
         
+        elif type == 'hourist':
+            newemployee = Employee(name=name,salary=salary,address=address,type=type,commission=commission,payday="Weekly")
+            CompanySystem.addEmployee(newemployee)
+            
+            employeeID = newemployee.getID()
+            print(employeeID.hex)
+            str = f"""
+            Successfully added the new employee!
+                                ID:{employeeID.hex}"""
+            #send the data to the database?
+            a = mb.showinfo(title='Success!',message=str)
         else:
-            newemployee = Employee(name=name,salary=salary,address=address,type=type,commission=commission)
+            newemployee = Employee(name=name,salary=salary,address=address,type=type,commission=commission,payday="Monthly")
             CompanySystem.addEmployee(newemployee)
             
             employeeID = newemployee.getID()
@@ -73,19 +97,20 @@ def submit(win,name,address,type,salary,commission):
         mb.showerror(title='Failure.',message='Could not create an employee. Try again, but remember to fill everything.')
 
 def windowTitleAndSearch(master,txt) -> None:
-    """Creates a Frame with a Title and a Entry to search Employee. Creates a separator too."""
+    """Creates a Frame with a Title and a Entry to search Employee. Creates a separator too. Returns the Entry object"""
     titleContainer = Frame(master)
     titleContainer.pack()
     title = Label(titleContainer,text=txt,font=('Arial','11','bold'))
     title.pack()
     idTxt = Frame(master)
     _id = Entry(idTxt)
-    idTxt.pack()
-    _id.pack()
-    searchBtn = Button(idTxt,text='Search',command=lambda arg1=_id.get() : employeeSearcher(_id.get()))
+    idTxt.pack(fill=X,expand=True,padx=5)
+    _id.pack(fill=X,expand=True)
+    searchBtn = Button(idTxt,text='Search',command=lambda arg1=_id.get(),arg2=idTxt,arg3=True : employeeSearcher(idTxt,_id.get(),True))
     searchBtn.pack(side=RIGHT)
     sep = ttk.Separator(master,orient='horizontal')
     sep.pack(fill=BOTH,pady=5)
+    return _id
 
 def showComission(container,lbl,entry,type):
 
@@ -99,8 +124,8 @@ def showComission(container,lbl,entry,type):
         lbl.pack_forget()
         entry.pack_forget()
 
-def employeeSearcher(master,id) -> Employee:
-    """Search for an employee by it's ID and return the found employee(if found)"""
+def employeeSearcher(master,id,showEmployee) -> Employee:
+    """Search for an employee by it's ID and return the found employee (if found)."""
     if id != '':
         realID = uuid.UUID(id)
         a = CompanySystem.searchEmployeeByID(realID) #object Employee
@@ -114,18 +139,18 @@ def employeeSearcher(master,id) -> Employee:
             uFee = a.getUnionFee()
             type = a.getType()
             #TODO #6 FIX this container and fix the change button
-            container=Frame(master)
-            txt1 = Label(container,text=f'Name: {name} | Address: {address} | Type: {type} | Payment: {payment} | Union Status: {status} | Union ID: {uID} | Union Fee: {uFee} | Commision: {commission}')
-            container.pack(side=TOP,padx=5,pady=5)
-            txt1.pack()
-            master.update()
+            if showEmployee:
+                container=Frame(master)
+                txt1 = Label(container,text=f'Name: {name} | Address: {address} | Type: {type} | Payment: {payment} | Union Status: {status} | Union ID: {uID} | Union Fee: {uFee} | Commision: {commission} | Salary: {a.salary}')
+                container.pack(side=TOP,padx=5,pady=5)
+                txt1.pack()
+                master.update()
             return a
         else:
             mb.showerror(title="Employee not found",message='Employee not found.')
     else:
         mb.showerror(title='Failure',message='Something went wrong. Maybe you forgot to fill the field?')
         return False
-    
 
 def employeeRemover(id) -> bool:
     if id != "":
@@ -139,18 +164,118 @@ def employeeRemover(id) -> bool:
         mb.showerror(title='Fill the ID!',message="Don't forget to fill the ID field.")
 
 def employeeChanger(master,name,type,salary,commission,payment,unionStatus,unionID,unionFee,address, employeeID) -> bool:
-    #arg1=master, arg2= _name, arg3= _type, arg4=_salary, arg5=_commission, arg6=_payment, arg7=_unionStatus, arg8=_unionID, arg9=_unionFee, arg10 =_address
-    realID = uuid.UUID(employeeID)
-    a = CompanySystem.searchEmployeeByID(realID)
+    print(f'+++++++++++++[{master,name,type,salary,commission,payment,unionStatus,unionID,unionFee,address, employeeID}]+++++++++++')
+    if employeeID != '': 
+        realID = uuid.UUID(employeeID)
+        employee = CompanySystem.searchEmployeeByID(realID)
+        if employee != False:
+            if name != '':
+                employee.setName(name)
+            if type != '':
+                employee.setType(type)
+            if salary != '':
+                employee.setSalary(salary)
+            if commission != '':
+                employee.setCommission(commission)       
+            if payment != '':
+                employee.setPayment(payment)
+            if unionStatus != '':
+                employee.setUnionStatus(unionStatus)
+            if unionID != '':
+                employee.setUnionID(unionID)
+            if unionFee != '':
+                employee.setUnionFee(unionFee)
+            if address != '':
+                employee.setAddress(address)       
+            mb.showinfo(title='Success',message="Successfully changed employee's attributes.")
+        else:
+            mb.showerror(title='Failure',message='Employee not found')
+            return False
+    else:
+        mb.showerror(title='Failure',message='Invalid UUID')
+        return False
 
+def pointSender(master, employeeID,arrival,leaving) -> bool:
+    """Sends Electronic Point Data to the Company System. Returns boolean"""
+    if employeeID != '':
+        realID = uuid.UUID(employeeID)
+        employee = CompanySystem.searchEmployeeByID(realID)
+        if employee != False:
+            sent = CompanySystem.electronicData(arrival,leaving,employee)
+            if sent:
+                mb.showinfo(title='Success',message='Electronic point data sent to the system.')
+                return True
+            else:
+                mb.showerror(title='Failure',message='Employee is not hourist')
+                return False
+        else:
+            mb.showerror(title='Failure',message='Employee not found.')
+            return False
+    else:
+        mb.showerror(title='Failure',message='Employee ID missing.')
+        return False
 
-    pass
+def saleSender(master, employeeID, sale) -> bool:
+    """Sends Sale Data to the Company System. Returns boolean"""
+    if employeeID != '':
+        realID = uuid.UUID(employeeID)
+        employee = CompanySystem.searchEmployeeByID(realID)
+        if employee != False:
+            sent = CompanySystem.saleData(employee,sale)
+            if sent:
+                mb.showinfo(title='Success',message='Sale data sent to the system.')
+                return True
+            else:
+                mb.showerror(title='Failure',message='Employee is not hourist')
+                return False
+        else:
+            mb.showerror(title='Failure',message='Employee not found.')
+            return False
+    else:
+        mb.showerror(title='Failure',message='Employee ID missing.')
+        return False
 
-def showChangeable(win, list):
-    
-    for a in list:
-        if(a):
-            print(a)
+def feeSender(master,employeeID,fee) -> bool:
+    """Sends Sale Data to the Company System. Returns boolean"""
+    if employeeID != '':
+        realID = uuid.UUID(employeeID)
+        employee = CompanySystem.searchEmployeeByID(realID)
+        if employee != False:
+            sent = CompanySystem.feeData(employee,fee)
+            if sent:
+                mb.showinfo(title='Success',message='Fee data sent to the system.')
+                return True
+            else:
+                mb.showerror(title='Failure',message='Employee does not belongs to Union')
+                return False
+        else:
+            mb.showerror(title='Failure',message='Employee not found.')
+            return False
+    else:
+        mb.showerror(title='Failure',message='Employee ID missing.')
+        return False
+
+def paydayChanger(master,employeeID, payday) -> bool:
+    """Changes the Payday. Returns boolean"""
+    if employeeID != '':
+        realID = uuid.UUID(employeeID)
+        employee = CompanySystem.searchEmployeeByID(realID)
+        if employee != False:
+            sent = CompanySystem.feeData(employee,payday)
+            if sent:
+                mb.showinfo(title='Success',message='Fee data sent to the system.')
+                return True
+            else:
+                mb.showerror(title='Failure',message='Employee is not hourist')
+                return False
+        else:
+            mb.showerror(title='Failure',message='Employee not found.')
+            return False
+    else:
+        mb.showerror(title='Failure',message='Employee ID missing.')
+        return False
+        
+
 class Menu(Frame):
     """ It's the class that shows the MENU."""
     def __init__(self,master=None):
@@ -198,7 +323,7 @@ class Menu(Frame):
         
     # ----- send tax -----       
         self.sendTaxContainer = Frame(master,pady=20).pack()
-        self.btnSendTax = Button(self.sendTaxContainer,text='Send Service Tax',command=self.sendTax).pack()
+        self.btnSendTax = Button(self.sendTaxContainer,text='Send Union Service Fee',command=self.sendTax).pack()
     
     # ----- spacer -----
         self.spacerLbl=Label(self.spacer,text='').pack()
@@ -229,7 +354,7 @@ class Menu(Frame):
         master = win
         # ----- settings -----
         win.title("Add Employee")
-        options = ['hourly', 'salaried', 'commissioned']
+        options = ['hourist', 'salaried', 'commissioned']
         # ----- brief explanation of the function
         container1 = Frame(win,pady=20)
         container1.pack()
@@ -261,7 +386,6 @@ class Menu(Frame):
         lbl3.pack(side=LEFT,pady=5)
         type = StringVar(master)
         type.set(options[0])
-            #typeChooser = OptionMenu(container4,type,*options)
         typeChooser = ttk.Combobox(container4,state='readonly',values=options,textvariable=type)
         typeChooser.pack(side=RIGHT)
         #----- salary ------
@@ -348,9 +472,9 @@ class Menu(Frame):
         title.pack()
         idContainer = Frame(win)
         _id = Entry(idContainer)
-        idContainer.pack(side=TOP)
+        idContainer.pack(side=TOP,fill=X)
         _id.pack(padx=5,fill=X,expand=TRUE)
-        searchBtn = Button(idContainer,text='Search',command=lambda arg1 = master,arg2=_id.get() : employeeSearcher(master,_id.get()))
+        searchBtn = Button(idContainer,text='Search',command=lambda arg1 = master,arg2=_id.get(),arg3=True : employeeSearcher(master,_id.get(),True))
         searchBtn.pack(side=RIGHT)
         
         # ----- checkbar -----
@@ -364,11 +488,22 @@ class Menu(Frame):
         lbl1.pack(pady=5,padx=5)
         _name = Container(master,'Name')
         _address = Container(master,'Address')
-        _type = Container(master,'Type')
+        _type = ContainerCombobox(master,'Type    ',['hourist','salaried','commissioned'])
         _salary = Container(master,'Salary' )
         _commission = Container(master,'Commission')
-        _payment = Container(master,'Payment')
-        _unionStatus = Container(master,'Union Status')
+        
+        containerCombobox = Frame(master)
+        containerCombobox.pack()
+        options=['Bank account deposit','Postal Service','Check on hands']
+        _paymentLabel = Label(containerCombobox,text='Payment   ')
+        _paymentLabel.pack(side=LEFT,padx=30)
+        _payment = StringVar(master)
+        _payment.set(options[0])
+        _paymentChooser = ttk.Combobox(containerCombobox,state='readonly',values=options,textvariable=_payment)
+        _paymentChooser.pack(side=RIGHT)
+
+        _unionStatus = ContainerCombobox(master,'Union Status  ',[False, True] )
+        #_unionStatus = Container(master,'Union Status')
         _unionID = Container(master,'Union ID')
         _unionFee = Container(master,'Union Fee')
         #arg1=master, arg2= _name, arg3= _type, arg4=_salary, arg5=_commission, arg6=_payment, arg7=_unionStatus, arg8=_unionID, arg9=_unionFee, arg10= _address
@@ -383,7 +518,23 @@ class Menu(Frame):
         #TODO #3 show what has been changed
         # ----- submit -----
         
-        btnSubmit = Button(exitButtonContainer, text='Change',command=lambda arg1=master, arg2= _name.get(), arg3= _type.get(), arg4=_salary.get(), arg5=_commission.get(), arg6=_payment.get(), arg7=_unionStatus.get(), arg8=_unionID.get(), arg9=_unionFee.get(), arg10=_address.get(),arg11=_id.get(): employeeChanger(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11))
+        btnSubmit = Button(exitButtonContainer, text='Change',
+        command=lambda  arg1= master, 
+                        arg2= _name.get(),
+                        arg3= _type.get(),
+                        arg4=_salary.get(), 
+                        arg5=_commission.get(), 
+                        arg6=_payment.get(), 
+                        arg7=_unionStatus.get(), 
+                        arg8=_unionID.get(),
+                        arg9=_unionFee.get(), 
+                        arg10=_address.get(),
+                        arg11=_id.get(): 
+                        employeeChanger(master=master,name=_name.get(),type=_type.get(),
+                                        salary=_salary.get(),commission=_commission.get(),
+                                        payment=_payment.get(),unionStatus=_unionStatus.get(),
+                                        unionID=_unionID.get(),unionFee=_unionFee.get(),
+                                        address=_address.get(),employeeID=_id.get()))
         btnSubmit.pack(side=RIGHT)
 
     def sendPoint(self):
@@ -391,7 +542,7 @@ class Menu(Frame):
         master.title('Send Electronic Point Data')
         master.resizable(False,False)
 
-        title = windowTitleAndSearch(master,'Insert ID of the employee')
+        _id = windowTitleAndSearch(master,'Insert ID of the employee')
 
         arrival = Container(master,"Arrival")
         leaving = Container(master,"Leaving")
@@ -403,16 +554,15 @@ class Menu(Frame):
 
         # ----- submit -----
         #TODO #4 create a button that commands a function to send the point data
-        #btnSubmit = Button(exitButtonContainer, text='Change',command=lambda arg1=_id.get(): employeeChanger(_id.get()))
-        #btnSubmit.pack(side=RIGHT)
-        pass
+        btnSubmit = Button(exitButtonContainer, text='Send',command=lambda arg1=_id.get(),arg2=master,arg3=arrival.get(),arg4=leaving.get(): pointSender(master,_id.get(),arrival.get(),leaving.get()))
+        btnSubmit.pack(side=RIGHT)
     
     def sendSale(self):
         master = Toplevel(menu)
         master.title('Send Sale Data')
         master.resizable(False,False)
 
-        title = windowTitleAndSearch(master,'Insert ID of the employee')
+        _id = windowTitleAndSearch(master,'Insert ID of the employee')
 
         sale = Container(master,"Sale Price")
 
@@ -423,17 +573,17 @@ class Menu(Frame):
 
         # ----- submit -----
         #TODO config submit button
-        #btnSubmit = Button(exitButtonContainer, text='Change',command=lambda arg1=_id.get(): employeeChanger(_id.get()))
-        #btnSubmit.pack(side=RIGHT)
+        btnSubmit = Button(exitButtonContainer, text='Send',command=lambda arg1=_id.get(),arg2=master,arg3=sale.get(): saleSender(master,_id.get(),sale.get()))
+        btnSubmit.pack(side=RIGHT)
     
     def sendTax(self):
         master = Toplevel(menu)
         master.title('Send Union Service Fee')
         master.resizable(False,False)
 
-        title = windowTitleAndSearch(master,'Insert ID of the employee')
+        _id = windowTitleAndSearch(master,'Insert ID of the employee')
 
-        sale = Container(master,"Fee")
+        fee = Container(master,"Fee")
 
         exitButtonContainer = Frame(master,pady=5,borderwidth=1)
         exitButtonContainer.pack(side=BOTTOM,fill=X)
@@ -442,8 +592,8 @@ class Menu(Frame):
 
         # ----- submit -----
         #TODO config submit button
-        #btnSubmit = Button(exitButtonContainer, text='Change',command=lambda arg1=_id.get(): employeeChanger(_id.get()))
-        #btnSubmit.pack(side=RIGHT)
+        btnSubmit = Button(exitButtonContainer, text='Send Fee',command=lambda arg1=_id.get(),arg2=fee.get(): feeSender(master,_id.get(),fee.get()))
+        btnSubmit.pack(side=RIGHT)
     
     def changePayday(self):
         master = Toplevel(menu)
