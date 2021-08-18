@@ -159,7 +159,6 @@ def employeeRemover(id) -> bool:
             b=mb.showinfo(title='Success!',message=f'Employee with ID: {id} removed.')
         else:
             c=mb.showerror(title="Failure.",message="Employee could not be removed.")
-        pass
     else:
         mb.showerror(title='Fill the ID!',message="Don't forget to fill the ID field.")
 
@@ -179,7 +178,7 @@ def employeeChanger(master,name,type,salary,commission,payment,unionStatus,union
                 employee.setCommission(commission)       
             if payment != '':
                 employee.setPayment(payment)
-            if unionStatus != '':
+            if unionStatus != '0':
                 employee.setUnionStatus(unionStatus)
             if unionID != '':
                 employee.setUnionID(unionID)
@@ -223,10 +222,10 @@ def saleSender(master, employeeID, sale) -> bool:
         if employee != False:
             sent = CompanySystem.saleData(employee,sale)
             if sent:
-                mb.showinfo(title='Success',message='Sale data sent to the system.')
+                mb.showinfo(title='Success',message=f'Sale data sent to the system. {sent} added to the wallet')
                 return True
             else:
-                mb.showerror(title='Failure',message='Employee is not hourist')
+                mb.showerror(title='Failure',message='Employee is not commissioned')
                 return False
         else:
             mb.showerror(title='Failure',message='Employee not found.')
@@ -243,7 +242,7 @@ def feeSender(master,employeeID,fee) -> bool:
         if employee != False:
             sent = CompanySystem.feeData(employee,fee)
             if sent:
-                mb.showinfo(title='Success',message='Fee data sent to the system.')
+                mb.showinfo(title='Success',message=f'Fee data sent to the system. {sent} removed from the wallet.')
                 return True
             else:
                 mb.showerror(title='Failure',message='Employee does not belongs to Union')
@@ -276,7 +275,8 @@ def paydayChanger(master,employeeID, payday) -> bool:
         return False
 
 def rollthePay(master):
-    #for today
+    #for employee in CompanySystem.employedList:
+        #if employee.payday ==
     pass
 
 class Menu(Frame):
@@ -447,18 +447,18 @@ class Menu(Frame):
         _id = Entry(idTxt)
         idTxt.pack(pady=5,fill=X)
         _id.pack(fill=X,expand=TRUE,padx=5)
-        print([_id.get()])
+        #print([_id.get()])
 
         exitButtonContainer = Frame(master,pady=5,borderwidth=1)
         exitButtonContainer.pack(side=BOTTOM,fill=X)
         btnExit = Button(exitButtonContainer,text='Back',command=win.destroy)
         btnExit.pack(side=LEFT)
-        menu.wm_deiconify()
+        #menu.wm_deiconify()
 
         #TODO #2 show who has been removed
         # ----- submit -----
-        #btnSubmit = Button(exitButtonContainer, text='Remove',command=lambda arg1=_id.get(): employeeRemover(_id.get()))
-        btnSubmit = Button(exitButtonContainer, text='Remove',command=lambda arg1=_id.get(): print(_id.get()))
+        btnSubmit = Button(exitButtonContainer, text='Remove',command=lambda arg1=_id.get(): employeeRemover(_id.get()))
+        #btnSubmit = Button(exitButtonContainer, text='Remove',command=lambda arg1=_id.get(): print(_id.get()))
         btnSubmit.pack(side=RIGHT)
         pass
     

@@ -4,17 +4,17 @@ import datetime
 from datetime import date, timedelta
 
 class Employee:
-	def __init__(self,name,address,type, salary,commission=0,hourWage=0,payday="mensal $"): 	#by default is a salaried an not filiated to the union
+	def __init__(self,name,address,type, salary,commission=0,hourWage=0,payday='monthly',unionFee=0): 	#by default is a salaried an not filiated to the union
 		self.name = name
 		self.address = address
 		self.type = type  													#salaried,commissioned,hourist
 		self.paymentMethod = 'Depósito em conta bancária'   				#correios,cheque em mãos, depósito em conta bancária
 		self.companyID = uuid.uuid4()
 		self.unionID = None
-		self.hourWage = hourWage
+		#self.hourWage = hourWage
 		self.salary = salary
 		self.unionStatus = False
-		self.unionFee = 0
+		self.unionFee = unionFee
 		self.commission = commission
 		self.payday= payday
 		self.createday = datetime.date.today()
@@ -25,27 +25,27 @@ class Employee:
 		today = datetime.date.today() #dia que foi criado
 		true_payday = None
 		if payday == 'weekly':
-			payday = today + datetime.date.timedelta(day=7)
+			payday = today + timedelta(days=7)
 			if payday.weekday() != 4:
 				time_left = payday.weekday() - 4
-				true_payday = payday + datetime.date.timedelta(day=time_left)
+				true_payday = payday + timedelta(days=time_left)
 		if payday == 'bi-weekly':
-			payday = today + datetime.date.timedelta(day=14)
+			payday = today + timedelta(days=14)
 			if payday.weekday() != 4:
 				time_left = payday.weekday() - 4
 				if time_left < 0:
-					true_payday = payday + datetime.date.timedelta(day=7-time_left)
+					true_payday = payday + timedelta(days=7-time_left)
 				elif time_left > 0:
-					true_payday = payday + datetime.date.timedelta(day=7+time_left)
+					true_payday = payday + timedelta(days=7+time_left)
 		if payday == 'monthly':
-			payday = today + datetime.date.timedelta(day=30)
+			payday = today + timedelta(days=30)
 			#time_left = payday.weekday() - 4
 			if payday.weekday() != 4:
 				time_left = payday.weekday()- 4
 				if time_left <0:
-					true_payday = payday + datetime.date.timedelta(day=7-time_left)
+					true_payday = payday + timedelta(days=7-time_left)
 				elif time_left >0:
-					true_payday = payday + datetime.date.timedelta(day=7+time_left)
+					true_payday = payday + timedelta(days=7+time_left)
 		
 		return true_payday
 
@@ -86,10 +86,13 @@ class Employee:
 		self.salary = newSalary
 		print('Salary changed successfully.')
 	def setUnionStatus(self, status):
-		self.unionStatus = status
+		if status:
+			self.unionStatus = True
+		else:
+			self.unionStatus = False
 		print('Union status changed successfully.')
 	def setUnionFee(self, newTax):
-		self.sidicateTax = newTax
+		self.unionFee = newTax
 		print('Union tax changed successfully')
 	def setCommission(self, newCom):
 		self.commission = newCom

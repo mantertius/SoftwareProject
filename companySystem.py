@@ -1,4 +1,5 @@
 import calendar
+from tkinter.constants import TRUE
 from employee2 import *
 from datetime import date
 class CompanySystem:
@@ -21,7 +22,6 @@ class CompanySystem:
 		else:
 			return False
 	#recieves the object employee
-	
 	def addEmployee(self, newEmployeeObject):
 		"""Adds an employee based on the EmployeeObject."""
 		self.employedList[newEmployeeObject.companyID] = newEmployeeObject  #appends the whole object
@@ -65,16 +65,16 @@ class CompanySystem:
 			commission = int(employee.commission)*int(saleValue)/100
 			self.accumulatedWage[employee.companyID] += commission
 			print(f'{commission} adicionado em sua carteira.')
-			return True
+			return int(commission)
 		else:
 			return False
 	
 	def feeData(self,employee,feeValue):
 		"""Recieves employee Object and the Fee value. Returns boolean."""
 		if employee.unionStatus:
-			self.accumulatedWage[employee.companyID] -= feeValue
+			self.accumulatedWage[employee.companyID] -= int(feeValue)
 			print(f'{feeValue} retirado de sua carteira.')
-			return True
+			return int(feeValue)
 		else:
 			return False
 
@@ -86,30 +86,25 @@ class CompanySystem:
 
 
 CompanySystem = CompanySystem()
-#test = Employee('blue','blim','h',32,13,55)
-print()
-print('--------------------------------------------------------')
-hourist = Employee('Nome1','Endereço1','hourist','10','semanal 1 sexta')
-salaried = Employee('Nome2','Endereço2','salaried','1132')
-commissioned = Employee('Nome3','Endereço3','commissioned','1132',commission=5,payday='semanal 2 sexta')
 
-#id1 = test.getID()
-idh = hourist.getID()
-ids = salaried.getID()
-idc = commissioned.getID()
+# print()
+# print('--------------------------------------------------------')
+# hourist = Employee('Nome1','Endereço1','hourist','10','weekly')
+# salaried = Employee('Nome2','Endereço2','salaried','1132')
+# commissioned = Employee('Nome3','Endereço3','commissioned','1132',commission=5,payday='bi-weekly')
 
-print(f'\nHourist: {idh.hex}')
-print(f'Salaried: {ids.hex}')
-print(f'Commissioned: {idc.hex}\n')
-#CompanySystem.addEmployee(test)
-CompanySystem.addEmployee(hourist)
-CompanySystem.addEmployee(salaried)
-CompanySystem.addEmployee(commissioned)
-print('-------------------------------------------------------------')
-print()
+# #id1 = test.getID()
+# idh = hourist.getID()
+# ids = salaried.getID()
+# idc = commissioned.getID()
 
+# print(f'\nHourist: {idh.hex} | {hourist.__dict__}')
+# print(f'Salaried: {ids.hex} | {salaried.__dict__}')
+# print(f'Commissioned: {idc.hex} | {commissioned.__dict__}\n')
+# #CompanySystem.addEmployee(test)
+# CompanySystem.addEmployee(hourist)
+# CompanySystem.addEmployee(salaried)
+# CompanySystem.addEmployee(commissioned)
+# print('-------------------------------------------------------------')
+# print()
 
-#print(CompanySystem.searchEmployeeByID(id1.hex))
-#(CompanySystem.searchEmployeeByID(id2))
-
-#CompanySystem.removeEmployeeByID(id1)
