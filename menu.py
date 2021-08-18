@@ -274,7 +274,10 @@ def paydayChanger(master,employeeID, payday) -> bool:
     else:
         mb.showerror(title='Failure',message='Employee ID missing.')
         return False
-        
+
+def rollthePay(master):
+    #for today
+    pass
 
 class Menu(Frame):
     """ It's the class that shows the MENU."""
@@ -660,8 +663,8 @@ class Menu(Frame):
 
         # ----- submit -----
         #todo config submit button
-        #btnSubmit = Button(exitButtonContainer, text='Change',command=lambda arg1=_id.get(): employeeChanger(_id.get()))
-        #btnSubmit.pack(side=RIGHT)
+        btnSubmit = Button(exitButtonContainer, text='Pay')#command=lambda arg1=_id.get(): employeeChanger(_id.get())
+        btnSubmit.pack(side=RIGHT)
 
 menu = Tk()
 app = Menu(menu)

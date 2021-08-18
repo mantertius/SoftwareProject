@@ -1,7 +1,10 @@
+from time import time
 import uuid
+import datetime
+from datetime import date, timedelta
 
 class Employee:
-	def __init__(self,name,address,type, salary,commission=0,hourWage=0,payday="Monthly"): 	#by default is a salaried an not filiated to the union
+	def __init__(self,name,address,type, salary,commission=0,hourWage=0,payday="mensal $"): 	#by default is a salaried an not filiated to the union
 		self.name = name
 		self.address = address
 		self.type = type  													#salaried,commissioned,hourist
@@ -13,8 +16,38 @@ class Employee:
 		self.unionStatus = False
 		self.unionFee = 0
 		self.commission = commission
-		self.payday = payday
+		self.payday= payday
+		self.createday = datetime.date.today()
+		self.nextPayday = self.payCal(payday)
 		print(f'Employee created. UUID: {self.companyID.hex}')
+
+	def payCal(self,payday):
+		today = datetime.date.today() #dia que foi criado
+		true_payday = None
+		if payday == 'weekly':
+			payday = today + datetime.date.timedelta(day=7)
+			if payday.weekday() != 4:
+				time_left = payday.weekday() - 4
+				true_payday = payday + datetime.date.timedelta(day=time_left)
+		if payday == 'bi-weekly':
+			payday = today + datetime.date.timedelta(day=14)
+			if payday.weekday() != 4:
+				time_left = payday.weekday() - 4
+				if time_left < 0:
+					true_payday = payday + datetime.date.timedelta(day=7-time_left)
+				elif time_left > 0:
+					true_payday = payday + datetime.date.timedelta(day=7+time_left)
+		if payday == 'monthly':
+			payday = today + datetime.date.timedelta(day=30)
+			#time_left = payday.weekday() - 4
+			if payday.weekday() != 4:
+				time_left = payday.weekday()- 4
+				if time_left <0:
+					true_payday = payday + datetime.date.timedelta(day=7-time_left)
+				elif time_left >0:
+					true_payday = payday + datetime.date.timedelta(day=7+time_left)
+		
+		return true_payday
 
 #getters 
 	def getName(self):

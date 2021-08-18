@@ -1,9 +1,11 @@
+import calendar
 from employee2 import *
+from datetime import date
 class CompanySystem:
 	def __init__(self):
 		self.employedList = {}
 		self.accumulatedWage= {}
-		self._paydays = {'Weekly','Bi-Weekly','Monthly'}
+		self._paydays = ['semanal 1 sexta','semanal 2 sexta','mensal $']
 		#self.employeePayday = {'dia' : [<empregado1>,emprega2]}
 
 	def searchEmployeeByName(self, employeeName):
@@ -76,19 +78,20 @@ class CompanySystem:
 		else:
 			return False
 
-	def addPayday(self, newPayday):
-		self._paydays[newPayday] = None
+	#def runPayroll(self,selectedPayday):
+		# employee in self.accumulatedWage:
+			#if employee.payday == 'semanal 1 sexta' && date.today() ==
 
-		pass
+		#pass
 
 
 CompanySystem = CompanySystem()
 #test = Employee('blue','blim','h',32,13,55)
 print()
 print('--------------------------------------------------------')
-hourist = Employee('Nome1','Endereço1','hourist','10')
+hourist = Employee('Nome1','Endereço1','hourist','10','semanal 1 sexta')
 salaried = Employee('Nome2','Endereço2','salaried','1132')
-commissioned = Employee('Nome3','Endereço3','commissioned','1132',commission=5)
+commissioned = Employee('Nome3','Endereço3','commissioned','1132',commission=5,payday='semanal 2 sexta')
 
 #id1 = test.getID()
 idh = hourist.getID()
